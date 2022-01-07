@@ -1,7 +1,7 @@
+from __future__ import print_function
 from bluepy.btle import Peripheral, UUID
 from bluepy.btle import Scanner, DefaultDelegate
 
-from __future__ import print_function
 
 import argparse
 import dbus
@@ -242,7 +242,8 @@ if __name__ == '__main__':
 
     while(True):
         scanner = Scanner().withDelegate(ScanDelegate())
-        print 'Scanning for %d seconds.......' % scan_time
+        print('Start scanning for {} seconds................'.format(scan_time))
+
         devices = scanner.scan(scan_time)
 
         for dev in devices:
@@ -257,10 +258,11 @@ if __name__ == '__main__':
             elif candidate[-1][:4] == 'Bike':
             
                 if candidate[-2][-2:] == '0f':
-                    print '%s CRASH' % candidate[-1][:4] 
-
+                    print('CRASH') 
+                    print('Start advertise for {} seconds....'.format(timeout))
                     main(args.timeout)
+                    print('End advertising.........')
                     #clear crash state
                     candidate = []
-
-        
+		else:
+		    print('Bike is safe........')
