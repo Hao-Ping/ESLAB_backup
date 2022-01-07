@@ -137,7 +137,7 @@ class Advertisement(dbus.service.Object):
         print('%s: Released!' % self.path)
 
 
-class TestAdvertisement(Advertisement):
+class CrashAdvertisement(Advertisement):
 
     def __init__(self, bus, index):
         Advertisement.__init__(self, bus, index, 'peripheral')
@@ -145,6 +145,18 @@ class TestAdvertisement(Advertisement):
         self.add_service_uuid('180F')
         self.add_manufacturer_data(0xffff, [0x00, 0x01, 0x02, 0x03])
         self.add_service_data('9999', [0x00, 0x01, 0x02, 0x03, 0x03])
+        self.add_local_name('Bike_Alex')
+        self.include_tx_power = True
+        self.add_data(0x26, [0x01, 0x01, 0x00])
+
+class SpeedingAdvertisement(Advetisement):
+    
+    def __init__(self, bus, index):
+        Advertisement.__init__(self, bus, index, 'peripheral')
+        self.add_service_uuid('180D')
+        self.add_service_uuid('180F')
+        self.add_manufacturer_data(0xffff, [0x00, 0x01, 0x02, 0x03])
+        self.add_service_data('9999', [0x00, 0x01, 0x02, 0x04, 0x04])
         self.add_local_name('Bike_Alex')
         self.include_tx_power = True
         self.add_data(0x26, [0x01, 0x01, 0x00])
@@ -189,7 +201,7 @@ class ScanDelegate(DefaultDelegate):
 #devices = scanner.scan(2.0)
 
 
-def main(timeout=0):
+def main(timeout=0, crash=0, speeding=0):
     global mainloop
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -209,7 +221,12 @@ def main(timeout=0):
     ad_manager = dbus.Interface(bus.get_object(BLUEZ_SERVICE_NAME, adapter),
                                 LE_ADVERTISING_MANAGER_IFACE)
 
-    test_advertisement = TestAdvertisement(bus, 0)
+    if crash == 1:
+        test_advertisement = CrashAdvertisement(bus,0)
+    elif speeding == 1:
+        test_advertisement = SpeedingAdvertisement(bus,0)
+
+    #test_advertisement = TestAdvertisement(bus, 0)
 
     mainloop = GObject.MainLoop()
 
@@ -258,12 +275,17 @@ if __name__ == '__main__':
                 candidate = []
             elif candidate[-1][:4] == 'Bike':
             
-                if candidate[-2][-2:] == '0f':
+                if candidate[-2][-2:] == '77': # 77 for  119
                     print('CRASH') 
                     print('Start advertise for {} seconds....'.format(timeout))
-                    main(args.timeout)
+                    main(args.timeout, 1, 0)
                     print('End advertising.........')
                     #clear crash state
                     candidate = []
+
+		elif candidate[-2][-2:] == '2d': #2d for 45km/hr
+		    print('Speeding alert!!!')
+                    main(args.timeout, 0, 1)
+		    candidate = []
 		else:
 		    print('Bike is safe........')
