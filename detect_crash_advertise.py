@@ -239,6 +239,7 @@ if __name__ == '__main__':
     scan_time = 3
 
     crash = False
+    timeout = args.timeout
 
     while(True):
         scanner = Scanner().withDelegate(ScanDelegate())
