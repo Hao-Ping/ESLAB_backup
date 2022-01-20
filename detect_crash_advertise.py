@@ -320,8 +320,8 @@ if __name__ == '__main__':
 				    candidate = []
 				else:
 				    print('bike is safe........')
-			GPIO.cleanup()
-			print('GPIO cleaned up')
+			
+			
     except :
         RED.ChangeDutyCycle(0)
         GREEN.ChangeDutyCycle(0)
