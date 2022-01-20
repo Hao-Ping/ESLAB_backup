@@ -11,6 +11,26 @@ import dbus.service
 import time
 import threading
 
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+
+RUNNING = True
+
+green = 27
+red = 17
+blue = 22
+
+GPIO.setup(red, GPIO.OUT)
+GPIO.setup(green, GPIO.OUT)
+GPIO.setup(blue, GPIO.OUT)
+
+Freq = 100
+
+RED = GPIO.PWM(red, Freq)
+GREEN = GPIO.PWM(green, Freq)
+BLUE = GPIO.PWM(blue, Freq)
+
+
 try:
     from gi.repository import GObject  # python3
 except ImportError:
@@ -277,11 +297,22 @@ if __name__ == '__main__':
             
                 if candidate[-2][-2:] == '77': # 77 for  119
                     print('CRASH') 
-                    print('Start advertise for {} seconds....'.format(timeout))
-                    main(args.timeout, 1, 0)
-                    print('End advertising.........')
-                    #clear crash state
-                    candidate = []
+		    
+		    try:
+		        RED.start(100)
+			GREEN.start(1)
+			BLUE.start(1)
+			
+			print('Start advertise for {} seconds....'.format(timeout))
+                        main(args.timeout, 1, 0)
+
+                        print('End advertising.........')
+			GPIO.cleanup()
+                        #clear crash state
+                        candidate = []
+			
+		    except :
+			GPIO.cleanup()
 
 		elif candidate[-2][-2:] == '2d': #2d for 45km/hr
 		    print('Speeding alert!!!')
