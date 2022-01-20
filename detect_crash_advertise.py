@@ -262,61 +262,64 @@ if __name__ == '__main__':
     crash = False
     timeout = args.timeout
 
-    while(True):
-        scanner = Scanner().withDelegate(ScanDelegate())
-        print('Start scanning for {} seconds................'.format(scan_time))
-        devices = scanner.scan(scan_time)
+    GPIO.setmode(GPIO.BCM)
+    RUNNING = True
 
-        for dev in devices:
-            #print '%d: Device %s (%s), RSSI=%d dB' % (n, dev.addr, dev.addrType, dev.rssi)
-            candidate = []
+    green = 27
+    red = 17
+    blue = 22
 
-            for(adtype, desc, value) in dev.getScanData():
-                candidate.append(value)
+    GPIO.setup(red, GPIO.OUT)
+    GPIO.setup(green, GPIO.OUT)
+    GPIO.setup(blue, GPIO.OUT)
 
-            if candidate[-1][:4] != 'Bike':
-                candidate = []
-            elif candidate[-1][:4] == 'Bike':
-            
-                if candidate[-2][-2:] == '77': # 77 for  119
-                    print('CRASH') 
-		    GPIO.setmode(GPIO.BCM)
-	            RUNNING = True
+    Freq = 100
 
-		    green = 27
-	            red = 17
-		    blue = 22
+    RED = GPIO.PWM(red, Freq)
+    GREEN = GPIO.PWM(green, Freq)
+    BLUE = GPIO.PWM(blue, Freq)
 
-		    GPIO.setup(red, GPIO.OUT)
-		    GPIO.setup(green, GPIO.OUT)
-		    GPIO.setup(blue, GPIO.OUT)
+    try:
+		while(True):
+			scanner = Scanner().withDelegate(ScanDelegate())
+			print('Start scanning for {} seconds................'.format(scan_time))
+			devices = scanner.scan(scan_time)
 
-		    Freq = 100
+			for dev in devices:
+			    #print '%d: Device %s (%s), RSSI=%d dB' % (n, dev.addr, dev.addrType, dev.rssi)
+			    candidate = []
 
-		    RED = GPIO.PWM(red, Freq)
-		    GREEN = GPIO.PWM(green, Freq)
-		    BLUE = GPIO.PWM(blue, Freq)
-			
-		    try:
-			
-		        RED.start(100)
-			GREEN.start(1)
-			BLUE.start(1)
-			
-			print('Start advertise for {} seconds....'.format(timeout))
-                        main(args.timeout, 1, 0)
+			    for(adtype, desc, value) in dev.getScanData():
+				candidate.append(value)
 
-                        print('End advertising.........')
-			GPIO.cleanup()
-                        #clear crash state
-                        candidate = []
-			
-		    except :
-			GPIO.cleanup()
+			    if candidate[-1][:4] != 'Bike':
+				candidate = []
+			    elif candidate[-1][:4] == 'Bike':
+				if candidate[-2][-2:] == '77': # 77 for  119
+				    print('CRASH')
+				
+				    RED.start(100)
+				    GREEN.start(1)
+				    BLUE.start(1)
 
-		elif candidate[-2][-2:] == '2d': #2d for 45km/hr
-		    print('Speeding alert!!!')
-                    main(args.timeout, 0, 1)
-		    candidate = []
-		else:
-		    print('Bike is safe........')
+				    print('Start advertise for {} seconds....'.format(timeout))
+				    main(args.timeout, 1, 0)
+
+				    print('End advertising.........')
+				    RED.ChangeDutyCycle(0)
+				    GREEN.ChangeDutyCycle(0)
+				    BLUE.ChangeDutyCycle(0)
+				    #clear crash state
+				    candidate = []
+
+				elif candidate[-2][-2:] == '2d': #2d for 45km/hr
+				    print('Speeding alert!!!')
+				    main(args.timeout, 0, 1)
+				    candidate = []
+				else:
+				    print('Bike is safe........')
+    except :
+        RED.ChangeDutyCycle(0)
+        GREEN.ChangeDutyCycle(0)
+        BLUE.ChangeDutyCycle(0)
+	GPIO.cleanup()
