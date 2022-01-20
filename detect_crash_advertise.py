@@ -266,23 +266,6 @@ if __name__ == '__main__':
         scanner = Scanner().withDelegate(ScanDelegate())
         print('Start scanning for {} seconds................'.format(scan_time))
         devices = scanner.scan(scan_time)
-	
-	GPIO.setmode(GPIO.BCM)
-	RUNNING = True
-
-	green = 27
-	red = 17
-	blue = 22
-
-	GPIO.setup(red, GPIO.OUT)
-	GPIO.setup(green, GPIO.OUT)
-	GPIO.setup(blue, GPIO.OUT)
-
-	Freq = 100
-
-	RED = GPIO.PWM(red, Freq)
-	GREEN = GPIO.PWM(green, Freq)
-	BLUE = GPIO.PWM(blue, Freq)
 
         for dev in devices:
             #print '%d: Device %s (%s), RSSI=%d dB' % (n, dev.addr, dev.addrType, dev.rssi)
@@ -297,8 +280,25 @@ if __name__ == '__main__':
             
                 if candidate[-2][-2:] == '77': # 77 for  119
                     print('CRASH') 
-		    
+		    GPIO.setmode(GPIO.BCM)
+	            RUNNING = True
+
+		    green = 27
+	            red = 17
+		    blue = 22
+
+		    GPIO.setup(red, GPIO.OUT)
+		    GPIO.setup(green, GPIO.OUT)
+		    GPIO.setup(blue, GPIO.OUT)
+
+		    Freq = 100
+
+		    RED = GPIO.PWM(red, Freq)
+		    GREEN = GPIO.PWM(green, Freq)
+		    BLUE = GPIO.PWM(blue, Freq)
+			
 		    try:
+			
 		        RED.start(100)
 			GREEN.start(1)
 			BLUE.start(1)
