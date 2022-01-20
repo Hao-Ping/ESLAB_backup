@@ -292,9 +292,11 @@ if __name__ == '__main__':
 			    for(adtype, desc, value) in dev.getScanData():
 				candidate.append(value)
 
-			    if candidate[-1][:4] != 'Bike':
+			    if candidate[-1][:4] != 'bike':
 				candidate = []
-			    elif candidate[-1][:4] == 'Bike':
+			    elif candidate[-1][:4] == 'bike':
+                                print('bike found')
+
 				if candidate[-2][-2:] == '77': # 77 for  119
 				    print('CRASH')
 				
@@ -317,7 +319,9 @@ if __name__ == '__main__':
 				    main(args.timeout, 0, 1)
 				    candidate = []
 				else:
-				    print('Bike is safe........')
+				    print('bike is safe........')
+			GPIO.cleanup()
+			print('GPIO cleaned up')
     except :
         RED.ChangeDutyCycle(0)
         GREEN.ChangeDutyCycle(0)
