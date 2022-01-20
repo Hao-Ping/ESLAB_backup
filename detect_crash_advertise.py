@@ -149,7 +149,7 @@ class CrashAdvertisement(Advertisement):
         self.include_tx_power = True
         self.add_data(0x26, [0x01, 0x01, 0x00])
 
-class SpeedingAdvertisement(Advetisement):
+class SpeedingAdvertisement(Advertisement):
     
     def __init__(self, bus, index):
         Advertisement.__init__(self, bus, index, 'peripheral')
