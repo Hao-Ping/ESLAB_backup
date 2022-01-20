@@ -148,8 +148,8 @@ class CrashAdvertisement(Advertisement):
         self.add_service_uuid('180D')
         self.add_service_uuid('180F')
         self.add_manufacturer_data(0xffff, [0x00, 0x01, 0x02, 0x03])
-        self.add_service_data('9999', [0x00, 0x01, 0x02, 0x03, 0x03])
-        self.add_local_name('Bike_Alex')
+        self.add_service_data('', [0x00, 0x01, 0x02, 0x03, 0x03])
+        self.add_local_name('Road_Server')
         self.include_tx_power = True
         self.add_data(0x26, [0x01, 0x01, 0x00])
 
@@ -161,7 +161,7 @@ class SpeedingAdvertisement(Advertisement):
         self.add_service_uuid('180F')
         self.add_manufacturer_data(0xffff, [0x00, 0x01, 0x02, 0x03])
         self.add_service_data('9999', [0x00, 0x01, 0x02, 0x04, 0x04])
-        self.add_local_name('Bike_Alex')
+        self.add_local_name('Road_Server')
         self.include_tx_power = True
         self.add_data(0x26, [0x01, 0x01, 0x00])
 
@@ -316,7 +316,16 @@ if __name__ == '__main__':
 
 				elif candidate[-2][-2:] == '2d': #2d for 45km/hr
 				    print('Speeding alert!!!')
+				    RED.start(100)
+				    GREEN.start(1)
+				    BLUE.start(100)
+
 				    main(args.timeout, 0, 1)
+
+    				    RED.ChangeDutyCycle(0)
+				    GREEN.ChangeDutyCycle(0)
+				    BLUE.ChangeDutyCycle(0)
+
 				    candidate = []
 				else:
 				    print('bike is safe........')
